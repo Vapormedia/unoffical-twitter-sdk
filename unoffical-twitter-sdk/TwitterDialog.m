@@ -144,7 +144,7 @@ static CGFloat kBorderWidth = 10;
     CGFloat width = floor(scale_factor * frame.size.width) - kPadding * 2;
     CGFloat height = floor(scale_factor * frame.size.height) - kPadding * 2;
     
-    _orientation = [UIApplication sharedApplication].statusBarOrientation;
+    _orientation = [[UIDevice currentDevice] orientation];
     if (UIInterfaceOrientationIsLandscape(_orientation)) {
         self.frame = CGRectMake(kPadding, kPadding, height, width);
     } else {
@@ -365,8 +365,9 @@ static CGFloat kBorderWidth = 10;
     NSLog(@"%@", [url absoluteString]);
     if ([host isEqualToString:@"google.co.uk"]) {
         NSLog(@"At Yatterbox");
-        if ([[url.resourceSpecifier substringToIndex:8] isEqualToString:@"//cancel"]) {
-        
+        if ([[url.resourceSpecifier substringToIndex:8] isEqualToString:@"//cancel"] || 
+            [url.resourceSpecifier rangeOfString:@"?denied="].location != NSNotFound) {
+            [self cancel];
         } else {
             NSLog(@"Suceeded Now Getting Access Token");
             [self dialogDidSucceed:url];
@@ -407,7 +408,7 @@ static CGFloat kBorderWidth = 10;
 // UIDeviceOrientationDidChangeNotification
 
 - (void)deviceOrientationDidChange:(void*)object {
-    UIDeviceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
     if (!_showingKeyboard && [self shouldRotateToOrientation:orientation]) {
         [self updateWebOrientation];
         
